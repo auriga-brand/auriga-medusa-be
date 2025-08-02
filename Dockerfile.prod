@@ -4,8 +4,14 @@ FROM node:20-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Copy package.json, yarn.lock, and tsconfig.build.json explicitly
-COPY package.json yarn.lock tsconfig.build.json ./
+# DEBUGGING STEP: List all files to verify tsconfig.json is present
+RUN ls -a
+
+# Copy package.json, yarn.lock, and tsconfig.json
+COPY package.json yarn.lock tsconfig.json ./
+
+# DEBUGGING STEP: List files again after copy
+RUN ls -a
 
 # Install dependencies
 RUN yarn install --production
@@ -13,8 +19,8 @@ RUN yarn install --production
 # Copy all source files
 COPY . .
 
-# Build the project with the new file
-RUN yarn build --project tsconfig.build.json
+# Build the project using the standard medusa build command
+RUN yarn build
 
 # Stage 2: The final production image
 FROM node:20-alpine
