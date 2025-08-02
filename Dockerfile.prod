@@ -33,7 +33,6 @@ EXPOSE 9000
 
 # Set the DATABASE_URL environment variable here with the SSL parameter
 # Replace the placeholder with your actual database URL
-ENV DATABASE_URL="postgresql://md:eternal@cmdtz6z7f000mpka3iv03rrx8:5432/cmdtz6z7b000da3pk1vzre4ft"
 
 # Run the migrations and start the server
 CMD ["sh", "-c", "yarn build && medusa migrations run && medusa start"]
