@@ -1,5 +1,5 @@
-# ... (your existing Dockerfile content)
-FROM node:20-alpine
+# Stage 1: The builder stage
+FROM node:20-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -16,23 +16,19 @@ COPY . .
 # Build the project
 RUN yarn build
 
-# Final stage
+# Stage 2: The final production image
 FROM node:20-alpine
 
+# Set working directory
 WORKDIR /app
 
-# Copy the built files from the previous stage
-COPY --from=builder /app/build ./
-
-# Copy the node_modules and package.json from the builder stage
+# Copy the built files from the builder stage
+COPY --from=builder /app/.medusa/server ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
 # Expose port
 EXPOSE 9000
-
-# Set the DATABASE_URL environment variable here with the SSL parameter
-# Replace the placeholder with your actual database URL
 
 # Run the migrations and start the server
 CMD ["sh", "-c", "yarn build && medusa migrations run && medusa start"]
