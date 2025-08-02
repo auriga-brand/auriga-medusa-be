@@ -19,8 +19,8 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Copy built application and production dependencies
-# CHANGE THIS LINE TO USE .medusa/build instead of dist
-COPY --from=builder /app/.medusa/build ./
+# CHANGE THIS LINE TO USE .medusa/server
+COPY --from=builder /app/.medusa/server ./
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
@@ -31,5 +31,5 @@ ENV NODE_ENV=production
 # Expose the port Medusa runs on
 EXPOSE 9000
 
-# Start the application and run migrations
+# Command to run migrations and start the server
 CMD ["/bin/sh", "-c", "yarn medusa db:migrate && yarn start"]
