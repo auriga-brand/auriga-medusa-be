@@ -1,35 +1,39 @@
-# Stage 1: Build the application
-FROM node:20-alpine as builder
+# ... (your existing Dockerfile content)
+FROM node:20-alpine
 
+# Set working directory
 WORKDIR /app
 
-# Install dependencies
+# Copy package.json and yarn.lock
 COPY package.json yarn.lock ./
+
+# Install dependencies
 RUN yarn install --production
 
-# Copy the application source code
+# Copy all project files to the app directory
 COPY . .
 
-# Build the Medusa application
+# Build the project
 RUN yarn build
 
-# Stage 2: Create the final production image
+# Final stage
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy built application and production dependencies
-# CHANGE THIS LINE TO USE .medusa/server
-COPY --from=builder /app/.medusa/server ./
+# Copy the built files from the previous stage
+COPY --from=builder /app/build ./
 
+# Copy the node_modules and package.json from the builder stage
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
-# Set the environment variables
-ENV NODE_ENV=production
-
-# Expose the port Medusa runs on
+# Expose port
 EXPOSE 9000
 
-# Command to run migrations and start the server
-CMD ["/bin/sh", "-c", "yarn medusa db:migrate && yarn start"]
+# Set the DATABASE_URL environment variable here with the SSL parameter
+# Replace the placeholder with your actual database URL
+ENV DATABASE_URL="postgresql://md:eternal@cmdtz6z7f000mpka3iv03rrx8:5432/cmdtz6z7b000da3pk1vzre4ft"
+
+# Run the migrations and start the server
+CMD ["sh", "-c", "yarn build && medusa migrations run && medusa start"]
