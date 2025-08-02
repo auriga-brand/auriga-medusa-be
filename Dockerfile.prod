@@ -14,9 +14,6 @@ RUN yarn install --production
 COPY . .
 
 # Build the project
-RUN yarn build
-
-# Stage 2: The final production image
 FROM node:20-alpine
 
 # Set working directory
@@ -30,5 +27,5 @@ COPY --from=builder /app/package.json ./package.json
 # Expose port
 EXPOSE 9000
 
-# Run the migrations and start the server
-CMD ["sh", "-c", "medusa migrations run && medusa start"]
+# Run the migrations and start the server using yarn
+CMD ["sh", "-c", "yarn medusa migrations run && yarn medusa start"]
