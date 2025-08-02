@@ -13,8 +13,8 @@ RUN yarn install --production
 # Copy all source files
 COPY . .
 
-# Build the project with an explicit path to tsconfig.json
-RUN yarn build --project /app/tsconfig.json
+# Build the project using the standard medusa build command
+RUN yarn build
 
 # Stage 2: The final production image
 FROM node:20-alpine
