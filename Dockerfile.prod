@@ -1,18 +1,35 @@
 # Stage 1: Build the application
 FROM node:20-alpine as builder
+
 WORKDIR /app
+
+# Install dependencies
 COPY package.json yarn.lock ./
 RUN yarn install --production
+
+# Copy the application source code
 COPY . .
+
+# Build the Medusa application
 RUN yarn build
 
 # Stage 2: Create the final production image
 FROM node:20-alpine
+
 WORKDIR /app
-COPY --from=builder /app/dist ./dist
+
+# Copy built application and production dependencies
+# CHANGE THIS LINE TO USE .medusa/build instead of dist
+COPY --from=builder /app/.medusa/build ./
+
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
+# Set the environment variables
 ENV NODE_ENV=production
+
+# Expose the port Medusa runs on
 EXPOSE 9000
+
+# Start the application and run migrations
 CMD ["/bin/sh", "-c", "yarn medusa db:migrate && yarn start"]
