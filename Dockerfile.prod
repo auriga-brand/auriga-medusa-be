@@ -4,22 +4,16 @@ FROM node:20-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# DEBUGGING STEP: List all files to verify tsconfig.json is present
-RUN ls -a
-
-# Copy package.json, yarn.lock, and tsconfig.json
+# Copy package.json, yarn.lock, and tsconfig.json explicitly
 COPY package.json yarn.lock tsconfig.json ./
-
-# DEBUGGING STEP: List files again after copy
-RUN ls -a
 
 # Install dependencies
 RUN yarn install --production
 
-# Copy all source files
+# Copy all project files to the app directory
 COPY . .
 
-# Build the project using the standard medusa build command
+# Build the project
 RUN yarn build
 
 # Stage 2: The final production image
@@ -37,4 +31,4 @@ COPY --from=builder /app/package.json ./package.json
 EXPOSE 9000
 
 # Run the migrations and start the server
-CMD ["sh", "-c", "yarn build && medusa migrations run && medusa start"] 
+CMD ["sh", "-c", "yarn build && medusa migrations run && medusa start"]
