@@ -31,4 +31,4 @@ COPY --from=builder /app/package.json ./package.json
 EXPOSE 9000
 
 # Run the migrations and start the server
-CMD ["sh", "-c", "yarn build && medusa migrations run && medusa start"]
+CMD ["sh", "-c", "yarn build && medusa migrations run && medusa start"] 
