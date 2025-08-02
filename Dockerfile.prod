@@ -10,10 +10,13 @@ COPY package.json yarn.lock tsconfig.json ./
 # Install dependencies
 RUN yarn install --production
 
-# Copy all project files to the app directory
+# Copy all source files
 COPY . .
 
-# Build the project
+# Build the project, and fail if the build command fails
+RUN set -e && yarn build
+
+# Stage 2: The final production image
 FROM node:20-alpine
 
 # Set working directory
@@ -27,5 +30,5 @@ COPY --from=builder /app/package.json ./package.json
 # Expose port
 EXPOSE 9000
 
-# Run the migrations and start the server using yarn
+# Run the migrations and start the server
 CMD ["sh", "-c", "yarn medusa migrations run && yarn medusa start"]
